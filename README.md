@@ -111,7 +111,7 @@ seed:1637
 
 Key information is in the `Assets` folder. Important folders include:
 
-1. `_scenes`: the different screens participants saw when completing the task.
+`_scenes`: the different screens participants saw when completing the task.
   1. `SetUp`: Participant clicks on the input field and types in their ParticipantID. They press Enter to submit their PID, and then spacebar to begin the first trial.
   2. `Trial`: Displays one instance of the knapsack task. Participant sees the timer deplete to let them know how much time is remaining, otherwise the screen is static. Participants can press the 'up' arrow to forgo their remaining time and proceed immediately to the answer screen.
   3. `TrialAnswer`: Displays the answer screen, which shows a box on the left and right of the screen each containing either Yes or No (the two possible solutions). Participants press the 'left' ('right') arrow to select the answer visible on the left (right) of the screen.
@@ -120,9 +120,9 @@ Key information is in the `Assets` folder. Important folders include:
   6. `InterTrialRest`: Short rest screen in between trials, participants see nothing but a fixation cross.
   7. `SalivaPause`: At set points in time, the game will automatically pause when it is time to take a saliva sample. The pause will wait until a trial has been completed (including its ratings) before beginning. Following the sample, participants press the spacebar to end the pause and resume the task.
   8. `End`: Upon completing the last trial participants see a screen informing them they've completed the task.
-2. `DataInf`: stores all of the input parameters.
-3. `Scripts`: stores the C# scripts that run the game
+`DataInf`: stores all of the input parameters.
+`Scripts`: stores the C# scripts that run the game
   1. `BoardManager`: script mostly responsible for placing objects on the screen and visual appearance
   2. `GameManager`: primary engine responsible for most everything else
-4. `TobiiPro/Common/Scripts`: stores the C# scripts required for eye tracking and integration with TobiiPro
-5. `ScreenBasedSaveData.cs`: script responsible for saving the eye-tracking files. 
+`TobiiPro/Common/Scripts`: stores the C# scripts required for eye tracking and integration with TobiiPro
+`ScreenBasedSaveData.cs`: script responsible for saving the eye-tracking files. 
