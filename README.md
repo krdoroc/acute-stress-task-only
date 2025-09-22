@@ -120,9 +120,11 @@ Key information is in the `Assets` folder. Important folders include:
   6. `InterTrialRest`: Short rest screen in between trials, participants see nothing but a fixation cross.
   7. `SalivaPause`: At set points in time, the game will automatically pause when it is time to take a saliva sample. The pause will wait until a trial has been completed (including its ratings) before beginning. Following the sample, participants press the spacebar to end the pause and resume the task.
   8. `End`: Upon completing the last trial participants see a screen informing them they've completed the task.
+
 `DataInf`: stores all of the input parameters.
 `Scripts`: stores the C# scripts that run the game
   1. `BoardManager`: script mostly responsible for placing objects on the screen and visual appearance
   2. `GameManager`: primary engine responsible for most everything else
+
 `TobiiPro/Common/Scripts`: stores the C# scripts required for eye tracking and integration with TobiiPro
 `ScreenBasedSaveData.cs`: script responsible for saving the eye-tracking files. 
