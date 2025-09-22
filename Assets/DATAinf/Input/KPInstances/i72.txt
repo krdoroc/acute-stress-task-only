@@ -1,0 +1,15 @@
+instance_id:72
+capacity:95
+profit:167
+values:[17,37,21,10,43,17,27,48]
+weights:[18,38,42,45,32,15,41,6]
+opt_profit:145
+alpha_star:0.659090909090909
+solution:0
+alpha_p_wanted:0.759090909090909
+alpha_p_sampled:0.759090909090909
+alpha_c_wanted:0.4
+alpha_c_sampled:0.40084388185654
+ICdist_wanted:0.1
+ICdist_sampled:0.1
+seed:164

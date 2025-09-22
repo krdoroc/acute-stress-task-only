@@ -1,0 +1,8 @@
+timeRest1min:10
+timeRest1max:13
+timeRest2:1
+timeSaliva:1800
+timeQuestion:40
+timeAnswer:3
+timeLikert:60
+saliva_time:[14,20,20]

@@ -1,0 +1,14 @@
+instance_id:70
+capacity:119
+profit:132
+values:[16,17,13,45,36,24,31,21]
+weights:[29,36,45,33,39,38,41,37]
+opt_profit:112
+alpha_star:0.551724137931034
+solution:0
+alpha_p_wanted:0.651724137931034
+alpha_p_sampled:0.650246305418719
+alpha_c_wanted:0.4
+alpha_c_sampled:0.399328859060403
+ICdist_wanted:0.1
+ICdist_sampled:0.0985221674876847

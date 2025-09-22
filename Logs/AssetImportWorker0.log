@@ -1,0 +1,314 @@
+Unity Editor version:    2022.3.22f1 (887be4894c44)
+Branch:                  2022.3/staging
+Build type:              Release
+Batch mode:              YES
+macOS version:           Version 15.6.1 (Build 24G90)
+Darwin version:          24.6.0
+Architecture:            arm64
+Running under Rosetta:   NO
+Available memory:        32768 MB
+Using pre-set license
+Pro License: YES
+
+COMMAND LINE ARGUMENTS:
+/Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/MacOS/Unity
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker0
+-projectPath
+/Users/KRDoroc/Documents/GitHub/OneDrive_2025-09-22/Unity Task
+-logFile
+Logs/AssetImportWorker0.log
+-srvPort
+59887
+Successfully changed project path to: /Users/KRDoroc/Documents/GitHub/OneDrive_2025-09-22/Unity Task
+/Users/KRDoroc/Documents/GitHub/OneDrive_2025-09-22/Unity Task
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [8523587776] Host "[IP] 10.4.213.224 [Port] 0 [Flags] 2 [Guid] 892746505 [EditorId] 892746505 [Version] 1048832 [Id] OSXEditor(0,Karlos-MacBook-Pro.local) [Debug] 1 [PackageName] OSXEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [8523587776] Host "[IP] 10.4.213.224 [Port] 0 [Flags] 2 [Guid] 892746505 [EditorId] 892746505 [Version] 1048832 [Id] OSXEditor(0,Karlos-MacBook-Pro.local) [Debug] 1 [PackageName] OSXEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+[Physics::Module] Initialized MultithreadedJobDispatcher with 7 workers.
+Refreshing native plugins compatible for Editor in 0.69 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.22f1 (887be4894c44)
+[Subsystems] Discovering subsystems at path /Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path /Users/KRDoroc/Documents/GitHub/OneDrive_2025-09-22/Unity Task/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+ preferred device: Apple M1 Pro (high power)
+Metal devices available: 1
+0: Apple M1 Pro (high power)
+Using device Apple M1 Pro (high power)
+Initializing Metal device caps: Apple M1 Pro
+Initialize mono
+Mono path[0] = '/Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/Managed'
+Mono path[1] = '/Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/MonoBleedingEdge/lib/mono/unityjit-macos'
+Mono config path = '/Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56071
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: /Applications/Unity/Hub/Editor/2022.3.22f1/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: /Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll
+Registered in 0.000959 seconds.
+- Loaded All Assemblies, in  0.236 seconds
+Native extension for OSXStandalone target not found
+Native extension for WebGL target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.184 seconds
+Domain Reload Profiling: 420ms
+	BeginReloadAssembly (53ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (0ms)
+	RebuildCommonClasses (29ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (33ms)
+	LoadAllAssembliesAndSetupDomain (113ms)
+		LoadAssemblies (52ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (112ms)
+			TypeCache.Refresh (110ms)
+				TypeCache.ScanAssembly (100ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (184ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (137ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (1ms)
+			ProcessInitializeOnLoadAttributes (94ms)
+			ProcessInitializeOnLoadMethodAttributes (31ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.169 seconds
+Refreshing native plugins compatible for Editor in 0.12 ms, found 0 plugins.
+Native extension for OSXStandalone target not found
+Native extension for WebGL target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.219 seconds
+Domain Reload Profiling: 388ms
+	BeginReloadAssembly (77ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (4ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (18ms)
+	RebuildCommonClasses (28ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (23ms)
+	LoadAllAssembliesAndSetupDomain (32ms)
+		LoadAssemblies (57ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (7ms)
+			TypeCache.Refresh (7ms)
+				TypeCache.ScanAssembly (3ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (219ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (123ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (4ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (12ms)
+			ProcessInitializeOnLoadAttributes (89ms)
+			ProcessInitializeOnLoadMethodAttributes (13ms)
+			AfterProcessingInitializeOnLoad (1ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (3ms)
+Launching external process: /Applications/Unity/Hub/Editor/2022.3.22f1/Unity.app/Contents/Tools/UnityShaderCompiler
+Launched and connected shader compiler UnityShaderCompiler after 0.03 seconds
+Refreshing native plugins compatible for Editor in 0.12 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 5 unused Assets / (43.8 KB). Loaded Objects now: 513.
+Memory consumption went from 59.2 MB to 59.2 MB.
+Total: 1.867041 ms (FindLiveObjects: 0.024209 ms CreateObjectMapping: 0.002625 ms MarkObjects: 1.791042 ms  DeleteObjects: 0.048584 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:framework-osx-AVFoundation: e770b220cccbd017edd2c1fefb359320 -> 
+  custom:CustomObjectIndexerAttribute: 9a22284fe3817be447336de3de66b15e -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:AudioImporter_EditorPlatform: 3918e3fc78b5a79bad01e8451be0beb8 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 730311.937453 seconds.
+  path: Assets/_scenes/ScreenBasedPrefabDemo.prefab
+  artifactKey: Guid(b95e621c51ae54848be07fdf34f546e5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/_scenes/ScreenBasedPrefabDemo.prefab using Guid(b95e621c51ae54848be07fdf34f546e5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'eef98ce6ed607e1ed5bf38375c251d8a') in 0.016614 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 5
+========================================================================
+Received Import Request.
+  Time since last request: 0.741987 seconds.
+  path: Assets/Prefabs/Button.prefab
+  artifactKey: Guid(a45ed654342154da79226117bcd7b945) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Button.prefab using Guid(a45ed654342154da79226117bcd7b945) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5e74113a5080fff1138f834b20df186d') in 0.001150 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 12
+========================================================================
+Received Import Request.
+  Time since last request: 0.000146 seconds.
+  path: Assets/Prefabs/Timer1.prefab
+  artifactKey: Guid(a40c6a1a7bfb9402590fcf4ed71f9be3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Timer1.prefab using Guid(a40c6a1a7bfb9402590fcf4ed71f9be3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '009a2a97bbb107a64aee5a74c32c7a1e') in 0.000888 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 13
+========================================================================
+Received Import Request.
+  Time since last request: 0.000148 seconds.
+  path: Assets/Prefabs/Question.prefab
+  artifactKey: Guid(d494156fa53424f21b104860fd47e9e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Question.prefab using Guid(d494156fa53424f21b104860fd47e9e3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fecc48dfbde02f6a8fb6d84c71c55034') in 0.000785 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000110 seconds.
+  path: Assets/Prefabs/KSInstance3.prefab
+  artifactKey: Guid(0e272cba8e10d4cb38fc3dc2e7519e6f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/KSInstance3.prefab using Guid(0e272cba8e10d4cb38fc3dc2e7519e6f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '604bf0beea911bc83a039b373dea0df2') in 0.001116 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000229 seconds.
+  path: Assets/Prefabs/Question1.prefab
+  artifactKey: Guid(f723fcb25b3304dd2ad6772bcc2aa72d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Question1.prefab using Guid(f723fcb25b3304dd2ad6772bcc2aa72d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e5a3e55693ebf810c918a75415981bf9') in 0.000713 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000221 seconds.
+  path: Assets/Prefabs/Timer.prefab
+  artifactKey: Guid(9ce215c700e01469fad02bff555334ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Timer.prefab using Guid(9ce215c700e01469fad02bff555334ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4578970c620b06f19d87e844f53edc09') in 0.000811 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000167 seconds.
+  path: Assets/Prefabs/LEFTbutton 1.prefab
+  artifactKey: Guid(0eff7cc8e247f4a17891555b78e2a5b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/LEFTbutton 1.prefab using Guid(0eff7cc8e247f4a17891555b78e2a5b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '740fa2b1753cceffdff94c1dac9818d4') in 0.000692 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 11
+========================================================================
+Received Import Request.
+  Time since last request: 0.515942 seconds.
+  path: Assets/Resources/Hanger.prefab
+  artifactKey: Guid(b22719d732eb445a297d724c96aa1a08) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Hanger.prefab using Guid(b22719d732eb445a297d724c96aa1a08) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '30273073cd98795e52d401bf88c27423') in 0.069684 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 7
+========================================================================
+Received Import Request.
+  Time since last request: 0.000032 seconds.
+  path: Assets/Resources/KSItemWeight.prefab
+  artifactKey: Guid(6f2d3da19a445428c8f9449fbe0c153c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/KSItemWeight.prefab using Guid(6f2d3da19a445428c8f9449fbe0c153c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6ef6a11dcbe71bd9c112bc3004bcfc7a') in 0.001020 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 11
+========================================================================
+Received Import Request.
+  Time since last request: 0.000103 seconds.
+  path: Assets/Resources/KSItem3 Dupl.prefab
+  artifactKey: Guid(47c8dbf3debf3489b81fb57a86ef1155) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/KSItem3 Dupl.prefab using Guid(47c8dbf3debf3489b81fb57a86ef1155) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '365b61f8bdd5b4d0aa8352fc0aaf23f9') in 0.005344 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 29
+========================================================================
+Received Import Request.
+  Time since last request: 0.673613 seconds.
+  path: Assets/Sounds/A4.mp3
+  artifactKey: Guid(913794f3a2a384e79868aa45d9320d83) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Sounds/A4.mp3 using Guid(913794f3a2a384e79868aa45d9320d83) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '166093c2779d799b850a304cb22c981b') in 0.020396 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.501406 seconds.
+  path: Assets/Sprites/Bill.png
+  artifactKey: Guid(09717152ae4244ad9b575d584c7dda4c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Sprites/Bill.png using Guid(09717152ae4244ad9b575d584c7dda4c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'af721ae6ce3505dbb45f9eeded439085') in 0.014026 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000055 seconds.
+  path: Assets/Sprites/greyBar.png
+  artifactKey: Guid(feaeca5748a5a41588e9d51b62f8db06) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Sprites/greyBar.png using Guid(feaeca5748a5a41588e9d51b62f8db06) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3b70f0f938a7d4e05666447344520c40') in 0.004109 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000084 seconds.
+  path: Assets/Sprites/Logo Knapsack.png
+  artifactKey: Guid(e877a973845484670bc15da243cb4c0a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Sprites/Logo Knapsack.png using Guid(e877a973845484670bc15da243cb4c0a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bdcc3baadd74dad5f3d4d3727ecbf59a') in 0.005570 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000145 seconds.
+  path: Assets/Sprites/redBar.png
+  artifactKey: Guid(11f231e562fcd41018cb1a642b7d52d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Sprites/redBar.png using Guid(11f231e562fcd41018cb1a642b7d52d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd6966c87e7138a0d1363034fdf4bb391') in 0.003668 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
