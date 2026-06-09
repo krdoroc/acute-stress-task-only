@@ -126,5 +126,5 @@ Key information is in the `Assets` folder. Important folders include:
   1. `BoardManager`: script mostly responsible for placing objects on the screen and visual appearance
   2. `GameManager`: primary engine responsible for most everything else
 
-`TobiiPro/Common/Scripts`: stores the C# scripts required for eye tracking and integration with TobiiPro
+`TobiiPro/Common/Scripts` and `TobiiPro/ScreenBased/Scripts/Utility`: store the main C# scripts required for eye tracking and integration with TobiiPro
 `ScreenBasedSaveData.cs`: script responsible for saving the eye-tracking files. 
