@@ -27,6 +27,8 @@ namespace Tobii.Research.Unity
             if (ExperimentPauseService.Instance == null) runtime.AddComponent<ExperimentPauseService>();
             if (EyeTracker.Instance == null) runtime.AddComponent<EyeTracker>();
             if (Calibration.Instance == null) runtime.AddComponent<Calibration>();
+            if (runtime.GetComponent<GazeColliderDebugOverlay>() == null)
+                runtime.AddComponent<GazeColliderDebugOverlay>();
             Debug.Log("Eye-tracking runtime ready. Recalibrate with Ctrl+Shift+C.");
         }
     }

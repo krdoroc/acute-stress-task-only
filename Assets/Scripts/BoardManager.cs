@@ -229,8 +229,14 @@ public class BoardManager : MonoBehaviour {
         hanger.name = "KP WEIGHT (" + itemNumber + ")";
 
         // Stable AOI identities are independent of generated Unity object names.
-        bill.AddComponent<Tobii.Research.Unity.GazeTarget>().Configure("item_" + itemNumber + "_value");
-        weight.AddComponent<Tobii.Research.Unity.GazeTarget>().Configure("item_" + itemNumber + "_weight");
+        // Each visual region is made from two sibling collider objects, so configure
+        // every collider owner rather than relying on parent/sibling lookup.
+        string valueTargetId = "item_" + itemNumber + "_value";
+        string weightTargetId = "item_" + itemNumber + "_weight";
+        ConfigureGazeTarget(bill, valueTargetId);
+        ConfigureGazeTarget(topHanger, valueTargetId);
+        ConfigureGazeTarget(weight, weightTargetId);
+        ConfigureGazeTarget(hanger, weightTargetId);
 
         // This calculates area accrding to approach 1
         //		float areaItem1 = minAreaBill + (totalAreaBill - vs.Length * minAreaBill) * vs [itemNumber] / vs.Sum ();
@@ -282,6 +288,43 @@ public class BoardManager : MonoBehaviour {
 		return(itemInstance);
 
 	}
+
+    /// <summary>
+    /// Assigns a stable analysis identity to the GameObject that owns an AOI collider.
+    /// Keeping this validation here prevents silently writing hierarchy-path fallbacks
+    /// when the item prefab changes.
+    /// </summary>
+    private static void ConfigureGazeTarget(GameObject colliderOwner, string targetId)
+    {
+        if (colliderOwner == null)
+        {
+            Debug.LogError("Cannot configure gaze target '" + targetId + "': collider owner is missing.");
+            return;
+        }
+
+        int colliderCount = colliderOwner.GetComponents<Collider2D>().Length
+            + colliderOwner.GetComponents<Collider>().Length;
+        if (colliderCount == 0)
+        {
+            Debug.LogError("Cannot configure gaze target '" + targetId + "': '"
+                + colliderOwner.name + "' does not own a collider.", colliderOwner);
+            return;
+        }
+
+        if (colliderCount > 1)
+        {
+            Debug.LogError("Cannot configure gaze target '" + targetId + "': '"
+                + colliderOwner.name + "' owns " + colliderCount
+                + " colliders, so the intended AOI collider is ambiguous.", colliderOwner);
+            return;
+        }
+
+        Tobii.Research.Unity.GazeTarget gazeTarget =
+            colliderOwner.GetComponent<Tobii.Research.Unity.GazeTarget>();
+        if (gazeTarget == null)
+            gazeTarget = colliderOwner.AddComponent<Tobii.Research.Unity.GazeTarget>();
+        gazeTarget.Configure(targetId);
+    }
 
 	/// <summary>
 	/// Places the item on the input position

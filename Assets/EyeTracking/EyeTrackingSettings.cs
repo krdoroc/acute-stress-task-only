@@ -13,6 +13,9 @@ namespace Tobii.Research.Unity
         [SerializeField, Tooltip("Result of simulated calibration. Disable to test the failure prompt.")]
         private bool _simulatedCalibrationSucceeds = true;
 
+        [SerializeField, Tooltip("Draw labelled outlines around gaze-target colliders in the Game view.")]
+        private bool _showGazeTargetColliders;
+
         public static bool MouseSimulationEnabled
         {
             get { return Instance != null && Instance._useMouseSimulation; }
@@ -21,6 +24,11 @@ namespace Tobii.Research.Unity
         public static bool SimulatedCalibrationSucceeds
         {
             get { return Instance != null && Instance._simulatedCalibrationSucceeds; }
+        }
+
+        public static bool ShowGazeTargetColliders
+        {
+            get { return Instance != null && Instance._showGazeTargetColliders; }
         }
 
         private static EyeTrackingSettings Instance

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _useMouseSimulation: 0
   _simulatedCalibrationSucceeds: 1
+  _showGazeTargetColliders: 0
