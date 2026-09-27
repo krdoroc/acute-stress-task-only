@@ -54,5 +54,10 @@ MonoBehaviour:
   _saveData: 0
   _saveUnityData: 1
   _saveRawData: 1
-  _folder: Data
   _toggleSaveData: 0
+  _saveLocally: 1
+  _gazeTargetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _additionalSinkBehaviours: []
+  _showMouseHitOverlay: 1

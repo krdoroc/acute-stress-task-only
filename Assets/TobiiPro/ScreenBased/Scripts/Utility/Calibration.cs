@@ -27,9 +27,8 @@ namespace Tobii.Research.Unity
         /// </summary>
         public bool CalibrationInProgress { get { return _calibrationInProgress; } }
 
-        [SerializeField]
-        [Tooltip("This key will start a calibration.")]
-        private KeyCode _startKey = KeyCode.None;
+        /// <summary>True while calibration or its failure decision has paused the task.</summary>
+        public bool TaskPausedForCalibration { get { return ExperimentPauseService.CalibrationIsActive; } }
 
         /// <summary>
         /// Calibration points.
@@ -69,22 +68,46 @@ namespace Tobii.Research.Unity
             set
             {
                 _showCalibrationPanel = value;
-                _pointScript.gameObject.SetActive(_showCalibrationPanel);
-                _canvas.gameObject.SetActive(_showCalibrationPanel);
-                _panel.color = _showCalibrationPanel ? Color.black : new Color(0, 0, 0, 0);
+                if (_pointScript != null) _pointScript.gameObject.SetActive(_showCalibrationPanel);
+                if (_canvas != null) _canvas.gameObject.SetActive(_showCalibrationPanel);
+                if (_panel != null) _panel.color = _showCalibrationPanel ? Color.black : new Color(0, 0, 0, 0);
             }
         }
 
         private bool _showCalibrationPanel;
+        private bool _showFailurePrompt;
+        private bool _ownsCalibrationPause;
+        private bool _duplicateInstance;
+        private Vector2 _currentCalibrationPoint = new Vector2(0.5f, 0.5f);
+        private Texture2D _pointTexture;
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                _duplicateInstance = true;
+                Destroy(gameObject);
+                return;
+            }
+
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            if (_points == null || _points.Length == 0)
+            {
+                _points = new[]
+                {
+                    new Vector2(0.1f, 0.1f), new Vector2(0.5f, 0.1f), new Vector2(0.9f, 0.1f),
+                    new Vector2(0.1f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.9f, 0.5f),
+                    new Vector2(0.1f, 0.9f), new Vector2(0.5f, 0.9f), new Vector2(0.9f, 0.9f)
+                };
+            }
         }
 
         private void Start()
         {
-            _pointScript = _calibrationPoint.GetComponent<CalibrationPoint>();
+            if (_duplicateInstance) return;
+            if (_calibrationPoint != null) _pointScript = _calibrationPoint.GetComponent<CalibrationPoint>();
             ShowCalibrationPanel = false;
         }
 
@@ -106,9 +129,49 @@ namespace Tobii.Research.Unity
                 return false;
             }
 
+            PauseTask();
+            if (EyeTrackingSettings.MouseSimulationEnabled)
+            {
+                _calibrationInProgress = true;
+                StartCoroutine(PerformSimulatedCalibration(points, resultCallback));
+                return true;
+            }
+            if (EyeTracker.Instance == null || EyeTracker.Instance.EyeTrackerInterface == null)
+            {
+                LatestCalibrationSuccessful = false;
+                _showFailurePrompt = true;
+                LogCalibrationEvent("Calibration failed - no eye tracker");
+                if (resultCallback != null) resultCallback(false);
+                Debug.LogError("Calibration cannot start: no connected eye tracker.");
+                return false;
+            }
             _calibrationInProgress = true;
             StartCoroutine(PerformCalibration(points, resultCallback));
             return true;
+        }
+
+        /// <summary>
+        /// Runs the visible calibration sequence without contacting Tobii hardware.
+        /// The result comes from the shared eye-tracking settings and is logged as simulated.
+        /// </summary>
+        private IEnumerator PerformSimulatedCalibration(Vector2[] points, System.Action<bool> resultCallback)
+        {
+            if (points != null) _points = points;
+            ShowCalibrationPanel = true;
+            foreach (Vector2 pointPosition in _points)
+            {
+                ShowPoint(pointPosition);
+                yield return new WaitForSecondsRealtime(1f);
+            }
+
+            ShowCalibrationPanel = false;
+            LatestCalibrationSuccessful = EyeTrackingSettings.SimulatedCalibrationSucceeds;
+            _calibrationInProgress = false;
+            LogCalibrationEvent(LatestCalibrationSuccessful
+                ? "Simulated calibration successful" : "Simulated calibration failed");
+            if (LatestCalibrationSuccessful) RestoreTask();
+            else _showFailurePrompt = true;
+            if (resultCallback != null) resultCallback(LatestCalibrationSuccessful);
         }
 
         /// <summary>
@@ -121,7 +184,7 @@ namespace Tobii.Research.Unity
             // Wait for the thread to finish the blocking call.
             while (!result.Ready)
             {
-                yield return new WaitForSeconds(0.02f);
+                yield return new WaitForSecondsRealtime(0.02f);
             }
 
             Debug.Log(result);
@@ -157,7 +220,7 @@ namespace Tobii.Research.Unity
                     break;
                 }
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSecondsRealtime(0.1f);
             }
 
             if (!_calibrationThread.Running)
@@ -166,25 +229,30 @@ namespace Tobii.Research.Unity
                 _calibrationThread.StopThread();
                 _calibrationThread = null;
                 _calibrationInProgress = false;
+                ShowCalibrationPanel = false;
+                LatestCalibrationSuccessful = false;
+                if (resultCallback != null) resultCallback(false);
+                _showFailurePrompt = true;
                 yield break;
             }
 
             ShowCalibrationPanel = true;
 
             var enterResult = _calibrationThread.EnterCalibrationMode();
+            bool calibrationStepFailed = false;
 
             // Wait for the call to finish
             yield return StartCoroutine(WaitForResult(enterResult));
+            calibrationStepFailed = enterResult.Status == CalibrationStatus.Failure;
 
             // Iterate through the calibration points.
             foreach (var pointPosition in _points)
             {
                 // Set the local position and start the point animation
-                _calibrationPoint.rectTransform.anchoredPosition = new Vector2(Screen.width * pointPosition.x, Screen.height * (1 - pointPosition.y));
-                _pointScript.StartAnim();
+                ShowPoint(pointPosition);
 
                 // Wait for animation.
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSecondsRealtime(1f);
 
                 // As of this writing, adding a point takes about 175 ms. A failing add can take up to 3000 ms.
                 var collectResult = _calibrationThread.CollectData(new CalibrationThread.Point(pointPosition));
@@ -195,6 +263,7 @@ namespace Tobii.Research.Unity
                 // React to the result of adding a point.
                 if (collectResult.Status == CalibrationStatus.Failure)
                 {
+                    calibrationStepFailed = true;
                     Debug.Log("There was an error gathering data for this calibration point: " + pointPosition);
                 }
             }
@@ -210,22 +279,29 @@ namespace Tobii.Research.Unity
 
             // Wait for the call to finish
             yield return StartCoroutine(WaitForResult(leaveResult));
+            calibrationStepFailed = calibrationStepFailed || leaveResult.Status == CalibrationStatus.Failure;
 
             // Stop the thread.
             _calibrationThread.StopThread();
             _calibrationThread = null;
 
             // Finish up or restart if failure.
-            LatestCalibrationSuccessful = computeResult.Status == CalibrationStatus.Success;
+            LatestCalibrationSuccessful = !calibrationStepFailed && computeResult.Status == CalibrationStatus.Success;
 
             ShowCalibrationPanel = false;
 
-            if (resultCallback != null)
-            {
-                resultCallback(LatestCalibrationSuccessful);
-            }
-
+            if (resultCallback != null) resultCallback(LatestCalibrationSuccessful);
             _calibrationInProgress = false;
+            if (LatestCalibrationSuccessful)
+            {
+                LogCalibrationEvent("Calibration successful");
+                RestoreTask();
+            }
+            else
+            {
+                LogCalibrationEvent("Calibration failed");
+                _showFailurePrompt = true;
+            }
         }
 
         /// <summary>
@@ -233,6 +309,7 @@ namespace Tobii.Research.Unity
         /// </summary>
         private void OnDisable()
         {
+            if (_duplicateInstance) return;
             // Stop the calibration thread if it is not null.
             if (_calibrationThread != null)
             {
@@ -240,23 +317,134 @@ namespace Tobii.Research.Unity
                 _calibrationThread = null;
                 Debug.Log("Calibration thread stopped: " + (result ? "YES" : "NO"));
             }
+            _calibrationInProgress = false;
+            _showFailurePrompt = false;
+            ShowCalibrationPanel = false;
+            RestoreTask();
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(_startKey))
+            bool control = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            if (control && shift && Input.GetKeyDown(KeyCode.C) && !_showFailurePrompt)
+                RequestCalibrationFromShortcut();
+        }
+
+        private void RequestCalibrationFromShortcut()
+        {
+            if (_calibrationInProgress || _showFailurePrompt) return;
+            Debug.Log("Ctrl+Shift+C received; requesting eye-tracker calibration.");
+            bool started = StartCalibration();
+            Debug.Log("Calibration " + (started ? "" : "not ") + "started");
+        }
+
+        private void PauseTask()
+        {
+            if (_ownsCalibrationPause) return;
+            if (ExperimentPauseService.Instance == null)
             {
-                var calibrationStartResult = StartCalibration(
-                    resultCallback: (calibrationResult) =>
-                    GameManager.saveTimeStamp((calibrationResult ? "Calibration successful" : "Calibration failed"))  //added to script, saves a time stamp every time calibration is done and whether it worked properly or not
-                    );
+                Debug.LogError("Calibration cannot pause the task because ExperimentPauseService is missing.");
+                return;
+            }
 
-                Debug.Log("Calibration " + (calibrationStartResult ? "" : "not ") + "started");
+            _ownsCalibrationPause = ExperimentPauseService.Instance.BeginCalibrationPause();
+            if (!_ownsCalibrationPause) return;
+            LogCalibrationEvent("Calibration started");
+        }
 
-                calibrationStartResult = StartCalibration(
-                    resultCallback: (calibrationResult) =>
-                    Debug.Log("Calibration result is " + (calibrationResult ? "successful" : "unsuccessful")) //added to script, commented this part out as dont need it for finished game, couldnt find anothe way for line below to work
-                    );
+        private void LogCalibrationEvent(string eventType)
+        {
+            if (EyeTrackingSettings.MouseSimulationEnabled &&
+                !eventType.StartsWith("Simulated ", System.StringComparison.Ordinal))
+                eventType = "Simulated " + eventType;
+            try { GameManager.saveTimeStamp(eventType); }
+            catch (System.Exception exception) { Debug.LogError("Could not save calibration event: " + exception.Message); }
+        }
+
+        private void RestoreTask()
+        {
+            if (!_ownsCalibrationPause) return;
+            if (ExperimentPauseService.Instance != null) ExperimentPauseService.Instance.EndCalibrationPause();
+            _ownsCalibrationPause = false;
+        }
+
+        private void OnGUI()
+        {
+            Event currentEvent = Event.current;
+            if (currentEvent != null && currentEvent.type == EventType.KeyDown && currentEvent.keyCode == KeyCode.C &&
+                currentEvent.control && currentEvent.shift && !_showFailurePrompt)
+            {
+                RequestCalibrationFromShortcut();
+                currentEvent.Use();
+            }
+
+            GUI.depth = -1000;
+            if (_showCalibrationPanel)
+            {
+                Color previousColor = GUI.color;
+                GUI.color = Color.black;
+                GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
+                GUI.color = Color.white;
+                float elapsed = Mathf.Clamp01((Time.unscaledTime - _pointAnimationStart) / 1f);
+                float size = Mathf.Lerp(52f, 12f, elapsed);
+                GUI.DrawTexture(new Rect(Screen.width * _currentCalibrationPoint.x - size * 0.5f,
+                    Screen.height * _currentCalibrationPoint.y - size * 0.5f, size, size), GetPointTexture());
+                GUI.color = previousColor;
+            }
+
+            if (!_showFailurePrompt) return;
+            const float width = 560f;
+            const float height = 190f;
+            Rect box = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
+            GUI.ModalWindow(GetInstanceID(), box, DrawFailureWindow, "Eye tracker calibration failed");
+        }
+
+        private float _pointAnimationStart;
+
+        private void ShowPoint(Vector2 pointPosition)
+        {
+            _currentCalibrationPoint = pointPosition;
+            _pointAnimationStart = Time.unscaledTime;
+            if (_calibrationPoint != null)
+                _calibrationPoint.rectTransform.anchoredPosition =
+                    new Vector2(Screen.width * pointPosition.x, Screen.height * (1f - pointPosition.y));
+            if (_pointScript != null) _pointScript.StartAnim();
+        }
+
+        private Texture2D GetPointTexture()
+        {
+            if (_pointTexture != null) return _pointTexture;
+            const int textureSize = 64;
+            _pointTexture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
+            _pointTexture.name = "Runtime Calibration Point";
+            _pointTexture.hideFlags = HideFlags.HideAndDontSave;
+            var pixels = new Color[textureSize * textureSize];
+            Vector2 center = new Vector2((textureSize - 1) * 0.5f, (textureSize - 1) * 0.5f);
+            float radiusSquared = center.x * center.x;
+            for (int y = 0; y < textureSize; y++)
+                for (int x = 0; x < textureSize; x++)
+                    pixels[y * textureSize + x] = ((new Vector2(x, y) - center).sqrMagnitude <= radiusSquared)
+                        ? Color.red : Color.clear;
+            _pointTexture.SetPixels(pixels);
+            _pointTexture.Apply();
+            return _pointTexture;
+        }
+
+        private void DrawFailureWindow(int windowId)
+        {
+            GUI.Label(new Rect(25f, 40f, 510f, 55f), "Calibration was not applied. Re-calibrate before continuing, or explicitly ignore this warning.");
+            if (GUI.Button(new Rect(80f, 115f, 170f, 45f), "Re-calibrate"))
+            {
+                _showFailurePrompt = false;
+                LogCalibrationEvent("Calibration retry selected");
+                StartCalibration();
+            }
+            if (GUI.Button(new Rect(310f, 115f, 170f, 45f), "Ignore and continue"))
+            {
+                _showFailurePrompt = false;
+                LogCalibrationEvent("Calibration failure ignored");
+                RestoreTask();
             }
         }
     }

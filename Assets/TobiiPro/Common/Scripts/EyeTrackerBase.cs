@@ -177,6 +177,7 @@ namespace Tobii.Research.Unity
         }
 
         private bool _tooManyEyeTrackerInstances;
+        private bool _nativeSdkStarted;
 
         private bool _subscribingToUserPositionGuide;
 
@@ -202,6 +203,14 @@ namespace Tobii.Research.Unity
 
         private void Awake()
         {
+            var screenBasedTracker = this as EyeTracker;
+            if (screenBasedTracker != null && EyeTracker.Instance != null && EyeTracker.Instance != screenBasedTracker)
+            {
+                _tooManyEyeTrackerInstances = true;
+                Destroy(gameObject);
+                return;
+            }
+
             if (FindObjectsOfType<EyeTrackerBase>().Length > 1)
             {
                 _tooManyEyeTrackerInstances = true;
@@ -233,7 +242,21 @@ namespace Tobii.Research.Unity
 
         protected virtual void OnStart()
         {
+            if (this is EyeTracker && EyeTrackingSettings.MouseSimulationEnabled)
+            {
+                return;
+            }
+
+            // This project only includes the Windows native Tobii library.
+            if (Application.platform != RuntimePlatform.WindowsEditor &&
+                Application.platform != RuntimePlatform.WindowsPlayer)
+            {
+                Debug.LogWarning("Tobii eye tracking is unavailable on this platform. Enable Use Mouse Simulation in EyeTrackingSettings.asset to test gaze input.");
+                return;
+            }
+
             // Init autoconnect
+            _nativeSdkStarted = true;
             StartCoroutine(AutoConnectMonitoring());
         }
 
@@ -262,7 +285,10 @@ namespace Tobii.Research.Unity
 
             SubscribeToUserPositionGuide = false;
 
-            EyeTrackingOperations.Terminate();
+            if (_nativeSdkStarted)
+            {
+                EyeTrackingOperations.Terminate();
+            }
         }
 
         #endregion Unity Methods

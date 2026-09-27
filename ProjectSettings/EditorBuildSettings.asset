@@ -4,5 +4,32 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_scenes/SetUp.unity
+    guid: 3797c89d08fce4f36b2d467f73710a3f
+  - enabled: 1
+    path: Assets/_scenes/Trial.unity
+    guid: fdcf970ecff9c42648307f6ba77dd91a
+  - enabled: 1
+    path: Assets/_scenes/TrialAnswer.unity
+    guid: e9554346e1e3e4afe81be5003814bd2e
+  - enabled: 1
+    path: Assets/_scenes/ComplexityLikert.unity
+    guid: a7c44a80e11af40a3a8027bb73efbb50
+  - enabled: 1
+    path: Assets/_scenes/StressLikert.unity
+    guid: c0aec51a8c4d04a7fa59c4444864cae7
+  - enabled: 1
+    path: Assets/_scenes/SalivaPause.unity
+    guid: c0374cb103a97cf46b4ce142613bc110
+  - enabled: 1
+    path: Assets/_scenes/InterTrialRest.unity
+    guid: b905fee4ff41647a399c8ed8b7123919
+  - enabled: 1
+    path: Assets/_scenes/InterBlockRest.unity
+    guid: 29a341872ce9f4938ad822dea8043b1b
+  - enabled: 1
+    path: Assets/_scenes/End.unity
+    guid: 3bb0bb362e2034188b75537637131fc9
   m_configObjects: {}

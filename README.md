@@ -9,19 +9,18 @@ Game controls:
 - Select the left and right answer buttons by pressing the LEFT and RIGHT arrows, respectively.
 - Move left and right along the likert scales by pressing the LEFT and RIGHT arrows, respectively. Press the UP arrow to select your answer.
 - To check their head is in the correct position for the eye tracker to correctly record their gaze press 't'.
-- To initiate a new calibration of the gaze tracking press 'c'. 
+- To initiate a new calibration of the gaze tracking from any scene press Ctrl+Shift+C.
 
-Input/Output data folders are located in Assets/DataInf. This folder has to be added manually to the game after building. 
+Input files are located in `Assets/DATAinf/Input`. Generated output is written to the writable `Application.persistentDataPath/StudyData/<session>/` directory; `Assets/DATAinf` is never used for output.
 
 This is the structure of the folder:
 - DataInf
-	- Output
-	- Input 
+	- Input
 		- layoutParam.txt
 		- param.txt
 		- KPInstances
 			- i1.txt
-			- i2.txt 
+			- i2.txt
 				…
 			- 1_param2.txt
 			- 2_param2.txt
@@ -34,7 +33,7 @@ Description of INPUT files:
 
 Input Files: `param.txt`, `n_param2.txt`, `layoutParam.txt`, `KPInstances/i1.txt`…
 
-The main structure of these files is: 
+The main structure of these files is:
 NameOfTheVariable1:Value1
 NameOfTheVariable2:Value2
 …
@@ -58,9 +57,9 @@ timeRest2:=Time for the inter-blocks Break.
 timeQuestion:=Maximum time looking at the trial/instance/stimuli.
 timeAnswer:=Maximum time to submit an answer on the answer screen.
 timeLikert:=Maximum time to submit a likert rating.
-saliva_time:=Intervals of time (minutes) after which the task automatically pauses at the next opportunity. e.g., [14,20,20] will pause the task 14 minutes after starting the first trial, 20 minutes after the first pause, and 20 minutes after the second pause. 
+saliva_time:=Intervals of time (minutes) after which the task automatically pauses at the next opportunity. e.g., [14,20,20] will pause the task 14 minutes after starting the first trial, 20 minutes after the first pause, and 20 minutes after the second pause.
 
-KPInstances/n_param2.txt 
+KPInstances/n_param2.txt
 Variables can be allocated between param.txt and param2.txt with no effect on the game; however there must not be repeated definitions of variables. The distinction is done because param2.txt is an output from the instance selection program (e.g python).
 numberOfInstances:=Number of instances to be imported. The files uploaded are 			automatically i1-i”numberOfInstances”
 numberOfBlocks:=Number of blocks.
@@ -69,9 +68,9 @@ instanceRandomization:=Sequence of instances to be randomised. The vector must h
 
 
 KPInstances/i1.txt,KPInstances/i2.txt,…
-Instance information. Each file is a different instance of the Knapsack problem. 
+Instance information. Each file is a different instance of the Knapsack problem.
 Files must be added sequentially (i.e. 1,2,3,…). All Variables must be INTEGERS or vectors of INTEGERS.
-Weights and values must be vectors with the same length. InstanceType should be allocated according to one of the levels of difficulty. 
+Weights and values must be vectors with the same length. InstanceType should be allocated according to one of the levels of difficulty.
 
 Description of fields:
 instance_id:=Unique instance identifier
@@ -127,4 +126,4 @@ Key information is in the `Assets` folder. Important folders include:
   2. `GameManager`: primary engine responsible for most everything else
 
 `TobiiPro/Common/Scripts` and `TobiiPro/ScreenBased/Scripts/Utility`: store the main C# scripts required for eye tracking and integration with TobiiPro
-`ScreenBasedSaveData.cs`: script responsible for saving the eye-tracking files. 
+`ScreenBasedSaveData.cs`: script responsible for saving the eye-tracking files. See `EYETRACKING.md` for architecture, setup, calibration, output, DHive extension, and porting guidance.

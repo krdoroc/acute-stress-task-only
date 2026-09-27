@@ -18,7 +18,7 @@ namespace Tobii.Research.Unity
         private Image _image;
         private bool _animation;
 
-        private void Start()
+        private void Awake()
         {
             _image = GetComponent<Image>();
             _animation = false;
@@ -33,7 +33,7 @@ namespace Tobii.Research.Unity
         {
             if (_animation)
             {
-                var covered = (Time.time - _startTime) * _speed;
+                var covered = (Time.unscaledTime - _startTime) * _speed;
                 var unitCovered = covered / _length;
                 _image.rectTransform.localScale = Vector3.Lerp(_zoomOut, _zoomIn, unitCovered);
             }
@@ -42,7 +42,7 @@ namespace Tobii.Research.Unity
         public void StartAnim()
         {
             transform.localScale = _zoomOut;
-            _startTime = Time.time;
+            _startTime = Time.unscaledTime;
             _animation = true;
         }
     }

@@ -98,16 +98,13 @@ public class GameManager : MonoBehaviour {
 	//Is the question shown on scene 1?
 	private static int questionOn;
 
-    //Input and Outout Folders with respect to the Application.dataPath;
+    // Bundled inputs are read relative to Application.dataPath.
+    // Generated output is resolved by StudyDataPaths under Application.persistentDataPath.
     public static string inputFolder = "/DATAinf/Input/";
     public static string inputFolderKSInstances = "/DATAinf/Input/KPInstances/";
-    public static string outputFolder = "/DATAinf/Output/";
-
-
-    // Complete folder path of inputs and ouputs
+    // Complete bundled input paths.
     //public static string folderPathLoad = Application.dataPath + inputFolder;
     //public static string folderPathLoadInstances = Application.dataPath + inputFolderKSInstances;
-    //public static string folderPathSave = Application.dataPath + outputFolder;
 
     // Stopwatch to calculate time of events.
     private static System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
@@ -139,6 +136,7 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
+		Tobii.Research.Unity.EyeTrackingRuntimeBootstrap.EnsureRuntime();
 
 		//Makes the Game manager a Singleton
 		if (instance == null) {
@@ -251,6 +249,7 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+		if (Tobii.Research.Unity.ExperimentPauseService.InputIsBlocked) return;
 
         if (escena != "SetUp")
         {
@@ -269,6 +268,8 @@ public class GameManager : MonoBehaviour {
     //If paused/unpaused on ITI or IBI then it generates a new row in trial Info with an error ("pause"). i.e. there are now 2 rows for the trial.
     private void pauseManager()
     {
+        if (Tobii.Research.Unity.Calibration.Instance != null &&
+            Tobii.Research.Unity.Calibration.Instance.TaskPausedForCalibration) return;
         if (Input.GetKeyDown(KeyCode.P))
         {  //added to script
             Time.timeScale = (Time.timeScale == 1) ? 0 : 1;
@@ -311,11 +312,7 @@ public class GameManager : MonoBehaviour {
 			+ ";" + stressAnswer + ";" + stressTimeSpent; //added_to_script
 
 			string[] lines = {dataTrialText};
-		string folderPathSave = Application.dataPath + outputFolder;
-
-		//This location can be used by unity to save a file if u open the game in any platform/computer:      Application.persistentDataPath;
-
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName +"TrialInfo.txt",true)) {
+		using (StreamWriter outputFile = new StreamWriter(Tobii.Research.Unity.StudyDataPaths.GetSessionFile("TrialInfo.txt"), true)) {
 			foreach (string line in lines)
 				outputFile.WriteLine(line);
 		}
@@ -345,10 +342,7 @@ public class GameManager : MonoBehaviour {
 		string dataTrialText = block + ";" + trial + ";" + eventType + ";" + timeStamp();
 
 		string[] lines = {dataTrialText};
-		string folderPathSave = Application.dataPath + outputFolder;
-
-		//This location can be used by unity to save a file if u open the game in any platform/computer:      Application.persistentDataPath;
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "TimeStamps.txt",true)) {
+		using (StreamWriter outputFile = new StreamWriter(Tobii.Research.Unity.StudyDataPaths.GetSessionFile("TimeStamps.txt"), true)) {
 			foreach (string line in lines)
 				outputFile.WriteLine(line);
 		}
@@ -362,9 +356,7 @@ public class GameManager : MonoBehaviour {
 	private static void saveHeaders(){
 
 		identifierName = participantID + "_" + dateID + "_" + "Dec" + "_";
-		string folderPathSave = Application.dataPath + outputFolder;
-
-
+		Debug.Log("Study data output: " + Tobii.Research.Unity.StudyDataPaths.SessionDirectory);
 		//Saves InstanceInfo
 		string[] lines3 = new string[numberOfInstances+2];
 		lines3[0]="PartcipantID:" + participantID;
@@ -380,7 +372,7 @@ public class GameManager : MonoBehaviour {
 			l++;
 			ksn++;
 		}
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "InstancesInfo.txt",true)) {
+		using (StreamWriter outputFile = new StreamWriter(Tobii.Research.Unity.StudyDataPaths.GetSessionFile("InstancesInfo.txt"), true)) {
 			foreach (string line in lines3)
 				outputFile.WriteLine(line);
 		}
@@ -390,7 +382,7 @@ public class GameManager : MonoBehaviour {
 		string[] lines = new string[2];
 		lines[0]="PartcipantID:" + participantID;
 		lines [1] = "block;trial;answer;correct;timeSpent;randomYes(1=Left:No/Right:Yes);instanceNumber;xyCoordinates;error;complexAnswer;complexTimeSpent;stressAnswer;stressTimeSpent"; //added_to_script
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "TrialInfo.txt",true)) {
+		using (StreamWriter outputFile = new StreamWriter(Tobii.Research.Unity.StudyDataPaths.GetSessionFile("TrialInfo.txt"), true)) {
 			foreach (string line in lines)
 				outputFile.WriteLine(line);
 		}
@@ -400,7 +392,7 @@ public class GameManager : MonoBehaviour {
 		lines1[0]="PartcipantID:" + participantID;
 		lines1[1] = "InitialTimeStamp:" + initialTimeStamp;
 		lines1[2]="block;trial;eventType;elapsedTime";
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "TimeStamps.txt",true)) {
+		using (StreamWriter outputFile = new StreamWriter(Tobii.Research.Unity.StudyDataPaths.GetSessionFile("TimeStamps.txt"), true)) {
 			foreach (string line in lines1)
 				outputFile.WriteLine(line);
 		}
@@ -690,6 +682,7 @@ public class GameManager : MonoBehaviour {
 
 	//Takes care of changing the Scene to the next one (Except for when in the setup scene)
 	public static void changeToNextScene(int answer, int randomYes){
+		if (Tobii.Research.Unity.ExperimentPauseService.SceneTransitionsAreBlocked) return;
 		BoardManager.keysON = false;
 		if (escena == "SetUp") {
 			saveHeaders ();
@@ -819,6 +812,7 @@ public class GameManager : MonoBehaviour {
 
 	//Redirects to the next scene depending if the trials or blocks are over.
 	private static void changeToNextTrial(){
+		if (Tobii.Research.Unity.ExperimentPauseService.SceneTransitionsAreBlocked) return;
 		//Checks if trials are over
 		if (trial < numberOfTrials) {
 			SceneManager.LoadScene ("Trial");

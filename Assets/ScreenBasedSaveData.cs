@@ -2,6 +2,8 @@
 // Copyright © 2019 Tobii Pro AB. All rights reserved.
 //-----------------------------------------------------------------------
 
+using System;
+using System.Globalization;
 using System.Xml;
 using UnityEngine;
 
@@ -28,16 +30,20 @@ namespace Tobii.Research.Unity
         private bool _saveRawData = true;
 
         [SerializeField]
-        [Tooltip("Folder in the application root directory where data is saved.")]
-        private string _folder = "Data";
-
-        [SerializeField]
         [Tooltip("This key will start or stop saving data.")]
         private KeyCode _toggleSaveData = KeyCode.None;
 
-        private GazeTrail _gazeTrail;
+        [SerializeField, Tooltip("Write the built-in local XML file.")]
+        private bool _saveLocally = true;
+        [SerializeField, Tooltip("Layers containing gaze targets.")]
+        private LayerMask _gazeTargetLayers = ~0;
+        [SerializeField, Tooltip("Optional components implementing IGazeDataSink, such as a future DHive adapter.")]
+        private MonoBehaviour[] _additionalSinkBehaviours;
+        [SerializeField, Tooltip("Show the most recent mouse gaze target in the Game view.")]
+        private bool _showMouseHitOverlay = true;
 
-        private string LatestHit;
+        public bool MouseSimulationEnabled { get { return EyeTrackingSettings.MouseSimulationEnabled; } }
+        public bool SimulatedCalibrationSucceeds { get { return EyeTrackingSettings.SimulatedCalibrationSucceeds; } }
         /// <summary>
         /// If true, data is saved.
         /// </summary>
@@ -57,6 +63,9 @@ namespace Tobii.Research.Unity
         private EyeTracker _eyeTracker;
         private XmlWriterSettings _fileSettings;
         private XmlWriter _file;
+        private IGazeHitClassifier _hitClassifier;
+        private IGazeDataSink[] _additionalSinks;
+        private GazeSampleRecord _latestMouseRecord;
 
         private void Awake()
         {
@@ -66,7 +75,8 @@ namespace Tobii.Research.Unity
         private void Start()
         {
             _eyeTracker = EyeTracker.Instance;
-            _gazeTrail = GazeTrail.Instance;
+            _hitClassifier = new ScreenBasedGazeHitClassifier(Camera.main, _gazeTargetLayers.value);
+            BuildAdditionalSinks();
         }
 
         private void Update()
@@ -87,7 +97,7 @@ namespace Tobii.Research.Unity
                 return;
             }
 
-            if (_file == null)
+            if (_saveLocally && _file == null)
             {
                 // Opens data file. It becomes non-null.
                 OpenDataFile();
@@ -99,6 +109,22 @@ namespace Tobii.Research.Unity
                 return;
             }
 
+            // Do not mix calibration or failure-prompt samples into task gaze data.
+            // Drain real samples so they cannot be written after the task resumes.
+            if (Calibration.Instance != null && Calibration.Instance.TaskPausedForCalibration)
+            {
+                if (!MouseSimulationEnabled && _eyeTracker != null)
+                    while (_eyeTracker.NextData != default(IGazeData)) { }
+                return;
+            }
+
+            if (MouseSimulationEnabled)
+            {
+                WriteGazeData(new MouseGazeData(Input.mousePosition));
+                return;
+            }
+
+            if (_eyeTracker == null) return;
             var data = _eyeTracker.NextData;
             while (data != default(IGazeData))
             {
@@ -110,6 +136,15 @@ namespace Tobii.Research.Unity
         private void OnDestroy()
         {
             CloseDataFile();
+            CloseAdditionalSinks();
+        }
+
+        private void OnGUI()
+        {
+            if (!MouseSimulationEnabled || !_showMouseHitOverlay || _latestMouseRecord == null) return;
+            if (Calibration.Instance != null && Calibration.Instance.TaskPausedForCalibration) return;
+            string target = _latestMouseRecord.Hit.IsHit ? _latestMouseRecord.Hit.TargetId : "No hit";
+            GUI.Box(new Rect(10f, 10f, 360f, 48f), "MOUSE SIMULATION  |  " + target);
         }
 
         private void OpenDataFile()
@@ -119,11 +154,6 @@ namespace Tobii.Research.Unity
                 Debug.Log("Already saving data.");
                 return;
             }
-
-            //if (!System.IO.Directory.Exists(_folder))
-            //{
-            //    System.IO.Directory.CreateDirectory(_folder);
-            //}
 
             _fileSettings = new XmlWriterSettings();
             _fileSettings.Indent = true;
@@ -136,7 +166,7 @@ namespace Tobii.Research.Unity
             }
 
 
-            _file = XmlWriter.Create(System.IO.Path.Combine(Application.dataPath + GameManager.outputFolder, fileName), _fileSettings);
+            _file = XmlWriter.Create(StudyDataPaths.GetEyeTrackingFile(fileName), _fileSettings);
             _file.WriteStartDocument();
             _file.WriteStartElement("Data");
         }
@@ -159,45 +189,63 @@ namespace Tobii.Research.Unity
 
         private void WriteGazeData(IGazeData gazeData)
         {
+            GazeRaySource raySource;
+            GazeHit hit = _hitClassifier.Classify(gazeData, out raySource);
+            var record = new GazeSampleRecord(gazeData, hit, raySource, GameManager.participantID,
+                GameManager.escena, GameManager.block, GameManager.trial);
+            if (gazeData is MouseGazeData) _latestMouseRecord = record;
+            if (_file != null) WriteLocalRecord(record);
+            WriteAdditionalSinks(record);
+        }
+
+        private void WriteLocalRecord(GazeSampleRecord record)
+        {
+            IGazeData gazeData = record.GazeData;
             _file.WriteStartElement("GazeData");
-
-            if (_saveUnityData)
-            {
-                _file.WriteAttributeString("TimeStamp", gazeData.TimeStamp.ToString());
-
-                GameManager.EyeTrackerTime = gazeData.TimeStamp.ToString();
-
-                _file.WriteAttributeString("SystemTime", @System.DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss.ffffff")); //"dd MMMM, yyyy, HH-mm-ss"
-
-                //_file.WriteAttributeString("TrialNumber", GameManager.TotalTrials.ToString());
-
-                LatestHit = _gazeTrail.LatestHitObject != null ? _gazeTrail.LatestHitObject.name : "Nothing";
-                _file.WriteAttributeString("LatestHitObject", LatestHit);
-
-
-                //if(GameManager.escena == "Saccade" && GameManager.Saccade_Trial_Number != 0)
-                //{
-                //    _file.WriteAttributeString("ShowingSaccadeDot", (!GameManager.show_dot_next).ToString());
-                //    _file.WriteAttributeString("SaccadeDotPosition", GameManager.SaccadeRandomization[GameManager.Saccade_Trial_Number + GameManager.numberOfSaccadeTrials * GameManager.Saccade_Block_Number - 1].ToString());
-
-                //}
-
-
-                _file.WriteEye(gazeData.Left, "Left");
-                _file.WriteEye(gazeData.Right, "Right");
-                //_file.WriteRay(gazeData.CombinedGazeRayScreen, gazeData.CombinedGazeRayScreenValid, "CombinedGazeRayScreen");
-            }
-
-            if (_saveRawData)
-            {
-                //_file.WriteAttributeString("TrialNumber", GameManager.TotalTrials.ToString());
-
-                //_file.WriteAttributeString("TimeStamp", gazeData.TimeStamp.ToString());
-                //_file.WriteAttributeString("LatestHitObject", "Nothing");// _gazeTrail.LatestHitObject != null ? _gazeTrail.LatestHitObject.name : "Nothing");
-                _file.WriteRawGaze(gazeData.OriginalGaze);
-            }
-
+            _file.WriteAttributeString("SchemaVersion", GazeSampleRecord.CurrentSchemaVersion);
+            _file.WriteAttributeString("ParticipantId", record.ParticipantId);
+            _file.WriteAttributeString("Scene", record.Scene);
+            _file.WriteAttributeString("Block", record.Block.ToString(CultureInfo.InvariantCulture));
+            _file.WriteAttributeString("Trial", record.Trial.ToString(CultureInfo.InvariantCulture));
+            _file.WriteAttributeString("TimeStamp", gazeData.TimeStamp.ToString(CultureInfo.InvariantCulture));
+            _file.WriteAttributeString("SystemTimeUtc", DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture));
+            GameManager.EyeTrackerTime = gazeData.TimeStamp.ToString(CultureInfo.InvariantCulture);
+            _file.WriteAttributeString("GazeRaySource", record.RaySource.ToString());
+            _file.WriteAttributeString("Simulated", gazeData is MouseGazeData ? "True" : "False");
+            _file.WriteAttributeString("Hit", record.Hit.IsHit ? "True" : "False");
+            _file.WriteAttributeString("HitTargetId", record.Hit.TargetId);
+            _file.WriteAttributeString("HitObject", record.Hit.ObjectName);
+            _file.WriteAttributeString("HitPoint", record.Hit.Point.ToString("F6", CultureInfo.InvariantCulture));
+            _file.WriteAttributeString("HitBoundsMin", record.Hit.BoundsMin.ToString("F6", CultureInfo.InvariantCulture));
+            _file.WriteAttributeString("HitBoundsMax", record.Hit.BoundsMax.ToString("F6", CultureInfo.InvariantCulture));
+            if (_saveUnityData) { _file.WriteEye(gazeData.Left, "Left"); _file.WriteEye(gazeData.Right, "Right"); }
+            if (_saveRawData && gazeData.OriginalGaze != null) _file.WriteRawGaze(gazeData.OriginalGaze);
             _file.WriteEndElement();
+        }
+
+        private void BuildAdditionalSinks()
+        {
+            var sinks = new System.Collections.Generic.List<IGazeDataSink>();
+            if (_additionalSinkBehaviours != null) foreach (MonoBehaviour behaviour in _additionalSinkBehaviours)
+            {
+                IGazeDataSink sink = behaviour as IGazeDataSink;
+                if (sink != null) sinks.Add(sink);
+                else if (behaviour != null) Debug.LogError(behaviour.name + " does not implement IGazeDataSink.", behaviour);
+            }
+            _additionalSinks = sinks.ToArray();
+        }
+
+        private void WriteAdditionalSinks(GazeSampleRecord record)
+        {
+            foreach (IGazeDataSink sink in _additionalSinks) try { sink.Write(record); }
+            catch (Exception exception) { Debug.LogError("Gaze sink failed: " + exception); }
+        }
+
+        private void CloseAdditionalSinks()
+        {
+            if (_additionalSinks == null) return;
+            foreach (IGazeDataSink sink in _additionalSinks) try { sink.Close(); }
+            catch (Exception exception) { Debug.LogError("Gaze sink close failed: " + exception); }
         }
     }
 }

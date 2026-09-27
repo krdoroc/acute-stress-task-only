@@ -85,6 +85,7 @@ public class BoardManager : MonoBehaviour {
 
 	//The items for the scene are stored here.
 	private static Item[] items;
+	private readonly List<GameObject> generatedItemObjects = new List<GameObject>();
 
 	//start added_to_script
 	//initialise variables to store the likert slider and the final option selected by the participant
@@ -194,10 +195,11 @@ public class BoardManager : MonoBehaviour {
 	/// </summary>
 	/// <returns>The item structure</returns>
 	/// The item placing here is temporary; The real placing is done by the placeItem() method.
-	Item generateItem(int itemNumber ,Vector3 randomPosition){
+	Item generateItem(int itemNumber ,Vector3 randomPosition) {
 
 		//Instantiates the item and places it.
 		GameObject instance = Instantiate (KSItemPrefab, randomPosition, Quaternion.identity) as GameObject;
+		generatedItemObjects.Add(instance);
 
         instance.name = "KP Item (" + itemNumber + ")";
 
@@ -216,12 +218,19 @@ public class BoardManager : MonoBehaviour {
         GameObject hanger = instance.transform.Find("Hanger").gameObject;
 
 
-        //Sets the Text of the items
+        // SpriteRenderers at the default sorting order hide the UI Text labels.
+        // Draw the item shapes behind their labels without changing their colliders.
+        bill.GetComponent<SpriteRenderer>().sortingOrder = -1;
+        weight.GetComponent<SpriteRenderer>().sortingOrder = -1;
         bill.GetComponentInChildren<Text>().text = "$" + vs[itemNumber];
-		weight.GetComponentInChildren<Text>().text = "" + ws[itemNumber]+ "kg";
+		weight.GetComponentInChildren<Text>().text = ws[itemNumber] + "kg";
 
         topHanger.name = "KP BILL (" + itemNumber + ")";
         hanger.name = "KP WEIGHT (" + itemNumber + ")";
+
+        // Stable AOI identities are independent of generated Unity object names.
+        bill.AddComponent<Tobii.Research.Unity.GazeTarget>().Configure("item_" + itemNumber + "_value");
+        weight.AddComponent<Tobii.Research.Unity.GazeTarget>().Configure("item_" + itemNumber + "_weight");
 
         // This calculates area accrding to approach 1
         //		float areaItem1 = minAreaBill + (totalAreaBill - vs.Length * minAreaBill) * vs [itemNumber] / vs.Sum ();
@@ -341,11 +350,13 @@ public class BoardManager : MonoBehaviour {
 			bool itemsPlaced = false;
 			while (nt >= 1 && !itemsPlaced) {
 
-				GameObject[] items1 = GameObject.FindGameObjectsWithTag("Item");
-				foreach (GameObject item in items1)
-				{
-					Destroy(item);
-				}
+					foreach (GameObject generatedItem in generatedItemObjects)
+					{
+						if (generatedItem == null) continue;
+						generatedItem.SetActive(false);
+						Destroy(generatedItem);
+					}
+					generatedItemObjects.Clear();
 
 //				foreach (Item item in items)
 //				{
@@ -575,7 +586,7 @@ public class BoardManager : MonoBehaviour {
 
 		InputField pID = GameObject.Find ("ParticipantID").GetComponent<InputField>();
 
-		InputField.SubmitEvent se = new InputField.SubmitEvent();
+		InputField.EndEditEvent se = new InputField.EndEditEvent();
 		//se.AddListener(submitPID(start));
 		se.AddListener((value)=>submitPID(value,start));
 		pID.onEndEdit = se;
@@ -623,7 +634,8 @@ public class BoardManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		
+		if (Tobii.Research.Unity.ExperimentPauseService.InputIsBlocked) return;
+
 		if (keysON) {
 			setKeyInput ();
 		}
